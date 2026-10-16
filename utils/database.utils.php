@@ -247,16 +247,26 @@ if (extension_loaded('mysqli') && getenv('DB_DRIVER') !== 'sqlite') {
     }
 }
 
-// Seamless SQLite Fallback (Zero Setup / Instant Cloud Readiness)
+// Seamless SQLite Fallback (Zero Setup / Instant Cloud & Vercel Readiness)
 if (!$conn) {
-    $dbDir = __DIR__ . '/../database';
-    if (!is_dir($dbDir)) {
-        @mkdir($dbDir, 0777, true);
+    if (session_status() === PHP_SESSION_NONE && (!ini_get('session.save_path') || getenv('VERCEL'))) {
+        ini_set('session.save_path', sys_get_temp_dir());
     }
-    $sqliteFile = $dbDir . '/brewha.db';
-    if (!file_exists($sqliteFile) && !is_writable($dbDir)) {
-        // Fallback to sys temp dir if project root is read-only
+
+    $dbDir = __DIR__ . '/../database';
+    $bundledDb = $dbDir . '/brewha.db';
+    $isServerless = getenv('VERCEL') || getenv('AWS_LAMBDA_FUNCTION_NAME') || !is_writable($dbDir);
+
+    if ($isServerless) {
         $sqliteFile = sys_get_temp_dir() . '/brewha.db';
+        if (!file_exists($sqliteFile) && file_exists($bundledDb)) {
+            @copy($bundledDb, $sqliteFile);
+        }
+    } else {
+        if (!is_dir($dbDir)) {
+            @mkdir($dbDir, 0777, true);
+        }
+        $sqliteFile = $bundledDb;
     }
 
     $pdo = new PDO('sqlite:' . $sqliteFile, null, null, [
