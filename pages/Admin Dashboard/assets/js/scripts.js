@@ -1,4 +1,6 @@
-const API_BASE = `${window.location.origin}/ECOM-FINALS1/api`;
+const API_BASE = window.location.pathname.includes('/ECOM-FINALS1/')
+  ? `${window.location.origin}/ECOM-FINALS1/api`
+  : `${window.location.origin}/api`;
 
 let dashboardState = {
   products: [],
@@ -66,7 +68,7 @@ async function ensureAdminSession() {
       showPopupMessage(
         "Please login first.",
         "error",
-        `${window.location.origin}/ECOM-FINALS1/pages/Login%20Page/index.html`
+        "../Login Page/index.html"
       );
       return false;
     }
@@ -75,7 +77,7 @@ async function ensureAdminSession() {
       showPopupMessage(
         "Admin access only.",
         "error",
-        `${window.location.origin}/ECOM-FINALS1/index.html`
+        "../../index.html"
       );
       return false;
     }
@@ -87,7 +89,7 @@ async function ensureAdminSession() {
     showPopupMessage(
       "Session check failed.",
       "error",
-      `${window.location.origin}/ECOM-FINALS1/pages/Login%20Page/index.html`
+      "../Login Page/index.html"
     );
     return false;
   }
@@ -150,14 +152,14 @@ async function handleLogout(event) {
       showPopupMessage(
         "Logged out successfully!",
         "success",
-        `${window.location.origin}/ECOM-FINALS1/pages/Login%20Page/index.html`
+        "../Login Page/index.html"
       );
     } else {
       showPopupMessage(data.message || "Logout failed.", "error");
     }
   } catch (error) {
     console.error("logout error:", error);
-    window.location.href = `${window.location.origin}/ECOM-FINALS1/pages/Login%20Page/index.html`;
+    window.location.href = "../Login Page/index.html";
   }
 }
 

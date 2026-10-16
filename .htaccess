@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Transparently strip /ECOM-FINALS1/ prefix if present
+RewriteRule ^ECOM-FINALS1/(.*)$ /$1 [L,QSA]
+
+DirectoryIndex index.html index.php

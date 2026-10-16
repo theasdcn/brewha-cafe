@@ -7,7 +7,7 @@
 
 const API = {
     // Base URL for API endpoints - change this to your actual backend URL
-    BASE_URL: 'ECOM-FINALS1/api',
+    BASE_URL: window.location.pathname.includes('/ECOM-FINALS1/') ? `${window.location.origin}/ECOM-FINALS1/api` : `${window.location.origin}/api`,
     
     // Flag to use mock data (set to false when backend is ready)
     USE_MOCK: true,

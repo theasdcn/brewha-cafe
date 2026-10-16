@@ -1,10 +1,18 @@
 <?php
-require_once __DIR__ . '/../utils/database.utils.php';
+
+require_once __DIR__ . '/../../utils/database.utils.php';
 require_once __DIR__ . '/../helpers/auth.php';
 require_once __DIR__ . '/../helpers/response.php';
 
-$userId = getCurrentUserId();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$userId = !empty($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 1;
 $input = json_decode(file_get_contents("php://input"), true);
+if (!$input) {
+    $input = $_POST;
+}
 
 $itemId = (int)($input["item_id"] ?? 0);
 
@@ -13,12 +21,13 @@ if ($itemId <= 0) {
 }
 
 try {
-    $stmt = $pdo->prepare("
-        DELETE ci FROM cart_items ci
-        INNER JOIN carts c ON c.id = ci.cart_id
-        WHERE ci.id = ? AND c.user_id = ? AND c.status = 'active'
+    global $conn;
+    $stmt = $conn->prepare("
+        DELETE FROM cart_items
+        WHERE id = ? AND cart_id IN (SELECT id FROM carts WHERE user_id = ? AND status = 'active')
     ");
-    $stmt->execute([$itemId, $userId]);
+    $stmt->bind_param("ii", $itemId, $userId);
+    $stmt->execute();
 
     jsonResponse([
         "success" => true,

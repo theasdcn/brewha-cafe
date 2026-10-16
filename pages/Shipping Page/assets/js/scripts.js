@@ -1,4 +1,6 @@
-const API_BASE = '/ECOM-FINALS1/api';
+const API_BASE = window.location.pathname.includes('/ECOM-FINALS1/')
+  ? `${window.location.origin}/ECOM-FINALS1/api`
+  : `${window.location.origin}/api`;
 
 document.addEventListener("DOMContentLoaded", () => {
   initializeDropdown();

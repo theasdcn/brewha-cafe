@@ -4,7 +4,10 @@ error_reporting(0);
 
 require_once __DIR__ . '/../../utils/database.utils.php';
 
-$userId = 1;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$userId = !empty($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 1;
 
 // Accept JSON or POST
 $data = json_decode(file_get_contents("php://input"), true);
